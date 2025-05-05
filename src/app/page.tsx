@@ -66,7 +66,6 @@ interface Board {
 // ===============================
 // Contexto de Autenticación (Simulado)
 // ===============================
-
 const AuthContext = React.createContext<{
     user: User | null;
     login: (email: string) => Promise<void>;
@@ -397,7 +396,7 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             if (!prevBoard.lists[listId]) {
                 return prevBoard; // Do not proceed if the list suddenly disappeared
             }
-            return {
+            const updatedBoard = {
                 ...prevBoard,
                 tasks: {
                     ...prevBoard.tasks,
@@ -411,6 +410,8 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                     },
                 },
             };
+            localStorage.setItem('kanbanBoard', JSON.stringify(updatedBoard)); // Persistir en localStorage
+            return updatedBoard;
         });
     };
 
@@ -418,7 +419,7 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     const updateTask = (taskId: string, updates: Partial<Omit<Task, 'id' | 'listId'>>) => {
         setBoard(prevBoard => {
             if (!prevBoard.tasks[taskId]) return prevBoard; // Check if task exists
-            return {
+            const updatedBoard = {
                 ...prevBoard,
                 tasks: {
                     ...prevBoard.tasks,
@@ -428,6 +429,8 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                     },
                 },
             };
+            localStorage.setItem('kanbanBoard', JSON.stringify(updatedBoard));
+            return updatedBoard;
         });
     };
 
@@ -464,8 +467,7 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 updatedTasks.forEach(task => {
                     newTasks[task.id] = task;
                 });
-
-                return {
+                const updatedBoard = {
                     ...prevBoard,
                     lists: {
                         ...prevBoard.lists,
@@ -476,6 +478,8 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                     },
                     tasks: newTasks, // Usar el nuevo objeto de tareas
                 };
+                localStorage.setItem('kanbanBoard', JSON.stringify(updatedBoard));
+                return updatedBoard;
             } else { // Mover entre listas
                 // Remover tarea de la lista de origen
                 const sourceTaskIds = [...prevBoard.lists[sourceListId].taskIds];
@@ -503,7 +507,7 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                     newDestTasks[task.id] = task;
                 });
 
-                return {
+                const updatedBoard = {
                     ...prevBoard,
                     lists: {
                         ...prevBoard.lists,
@@ -525,6 +529,8 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                         ...newDestTasks, // Combinar las tareas actualizadas de la lista de destino
                     },
                 };
+                localStorage.setItem('kanbanBoard', JSON.stringify(updatedBoard));
+                return updatedBoard;
             }
         });
     };
@@ -537,13 +543,17 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             title,
             taskIds: [],
         };
-        setBoard(prevBoard => ({
-            ...prevBoard,
-            lists: {
-                ...prevBoard.lists,
-                [listId]: newList,
-            },
-        }));
+        setBoard(prevBoard => {
+            const updatedBoard = {
+                ...prevBoard,
+                lists: {
+                    ...prevBoard.lists,
+                    [listId]: newList,
+                },
+            };
+            localStorage.setItem('kanbanBoard', JSON.stringify(updatedBoard));
+            return updatedBoard;
+        });
     };
 
     // Función para eliminar una lista y sus tareas asociadas
@@ -559,11 +569,12 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             tasksToDelete.forEach(taskId => {
                 delete newTasks[taskId];
             });
-
-            return {
+            const updatedBoard = {
                 lists: restLists,
                 tasks: newTasks,
             };
+            localStorage.setItem('kanbanBoard', JSON.stringify(updatedBoard));
+            return updatedBoard;
         });
     };
 
@@ -586,11 +597,12 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
             // Eliminar la tarea del objeto de tareas
             const { [taskId]: deletedTask, ...restTasks } = prevBoard.tasks;
-
-            return {
+            const updatedBoard = {
                 lists: updatedLists,
                 tasks: restTasks,
             };
+            localStorage.setItem('kanbanBoard', JSON.stringify(updatedBoard));
+            return updatedBoard;
         });
     };
 
@@ -621,7 +633,7 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 newTasks[task.id] = task;
             });
 
-            return {
+            const updatedBoard = {
                 ...prevBoard,
                 lists: {
                     ...prevBoard.lists,
@@ -632,64 +644,73 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 },
                 tasks: newTasks, // Usar el nuevo objeto de tareas
             };
+            localStorage.setItem('kanbanBoard', JSON.stringify(updatedBoard));
+            return updatedBoard;
         });
     };
 
     // Simulación de carga inicial de datos
     useEffect(() => {
-        // Simulación de datos iniciales del tablero desde una API (ReqRes no tiene esto)
-        const initialData: Board = {
-            lists: {
-                'list-1': {
-                    id: 'list-1',
-                    title: 'Por Hacer',
-                    taskIds: ['task-1', 'task-2'],
+        // Cargar el tablero desde localStorage
+        const storedBoard = localStorage.getItem('kanbanBoard');
+        if (storedBoard) {
+            try {
+                setBoard(JSON.parse(storedBoard));
+            } catch (error) {
+                console.error("Failed to parse kanbanBoard from localStorage", error);
+                // Si hay un error al parsear, inicializar con datos vacíos o los datos por defecto
+                setBoard({ lists: {}, tasks: {} });
+            }
+        } else {
+            // Simulación de datos iniciales del tablero desde una API (ReqRes no tiene esto)
+            const initialData: Board = {
+                lists: {
+                    'list-1': {
+                        id: 'list-1',
+                        title: 'Por Hacer',
+                        taskIds: ['task-1', 'task-2'],
+                    },
+                    'list-2': {
+                        id: 'list-2',
+                        title: 'En Progreso',
+                        taskIds: ['task-3'],
+                    },
+                    'list-3': {
+                        id: 'list-3',
+                        title: 'Hecho',
+                        taskIds: [],
+                    },
                 },
-                'list-2': {
-                    id: 'list-2',
-                    title: 'En Progreso',
-                    taskIds: ['task-3'],
+                tasks: {
+                    'task-1': {
+                        id: 'task-1',
+                        title: 'Diseñar la interfaz de usuario',
+                        description: 'Crear wireframes y maquetas de la interfaz de usuario.',
+                        listId: 'list-1',
+                        completed: false,
+                        order: 0,
+                    },
+                    'task-2': {
+                        id: 'task-2',
+                        title: 'Desarrollar la lógica de autenticación',
+                        description: 'Implementar el inicio de sesión y el registro de usuarios.',
+                        listId: 'list-1',
+                        completed: false,
+                        order: 1,
+                    },
+                    'task-3': {
+                        id: 'task-3',
+                        title: 'Implementar el tablero Kanban',
+                        description: 'Crear las listas y la funcionalidad de arrastrar y soltar.',
+                        listId: 'list-2',
+                        completed: false,
+                        order: 0,
+                    },
                 },
-                'list-3': {
-                    id: 'list-3',
-                    title: 'Hecho',
-                    taskIds: [],
-                },
-            },
-            tasks: {
-                'task-1': {
-                    id: 'task-1',
-                    title: 'Diseñar la interfaz de usuario',
-                    description: 'Crear wireframes y maquetas de la interfaz de usuario.',
-                    listId: 'list-1',
-                    completed: false,
-                    order: 0,
-                },
-                'task-2': {
-                    id: 'task-2',
-                    title: 'Desarrollar la lógica de autenticación',
-                    description: 'Implementar el inicio de sesión y el registro de usuarios.',
-                    listId: 'list-1',
-                    completed: false,
-                    order: 1,
-                },
-                'task-3': {
-                    id: 'task-3',
-                    title: 'Implementar el tablero Kanban',
-                    description: 'Crear las listas y la funcionalidad de arrastrar y soltar.',
-                    listId: 'list-2',
-                    completed: false,
-                    order: 0,
-                },
-            },
-        };
-
-        // Simulación de carga asíncrona
-        setLoading(true);
-        setTimeout(() => {
+            };
             setBoard(initialData);
-            setLoading(false);
-        }, 500); // Simulación de 500ms de retraso
+            localStorage.setItem('kanbanBoard', JSON.stringify(initialData));
+        }
     }, []);
 
     const contextValue = {
@@ -838,6 +859,7 @@ const TaskCard: React.FC<{ taskId: string }> = ({ taskId }) => {
         </>
     );
 };
+
 
 
 
@@ -1009,11 +1031,10 @@ const ListColumn: React.FC<{ listId: string }> = ({ listId }) => {
     );
 };
 
-
 const BoardPage = () => {
     const { board, addList, loading, error } = useBoard();
     const [newListTitle, setNewListTitle] = useState('');
-    const [isAddingList, setIsAddingList] = useState(false);
+    const [isAddingList,setIsAddingList] = useState(false);
 
     const handleAddList = () => {
         if (newListTitle.trim()) {
@@ -1147,3 +1168,4 @@ const WrappedApp = () => {
 }
 
 export default WrappedApp;
+
