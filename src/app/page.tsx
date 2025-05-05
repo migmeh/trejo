@@ -383,7 +383,7 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     const addTask = (listId: string, title: string, description?: string) => {
         if (!board.lists[listId]) {
             console.error(`List with id ${listId} does not exist`);
-            return; 
+            return; // Important: Exit if list doesn't exist
         }
         const taskId = generateId();
         const newTask: Task = {
@@ -396,7 +396,7 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         };
 
         setBoard(prevBoard => {
-// Verifique nuevamente dentro de la actualización del estado para verificar que sea correcto            if (!prevBoard.lists[listId]) {
+            if (!prevBoard.lists[listId]) {
                 return prevBoard; 
             }
             const updatedBoard = {
@@ -442,7 +442,7 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         setBoard(prevBoard => {
             // Validar que las listas y la tarea existan
             if (!prevBoard.lists[sourceListId] || !prevBoard.lists[destinationListId] || !prevBoard.tasks[taskId]) {
-                console.error("Invalid list or task ID in moveTask");
+                console.error("Invalido");
                 return prevBoard;
             }
 
@@ -562,7 +562,7 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     // Función para eliminar una lista y sus tareas asociadas
     const deleteList = (listId: string) => {
         setBoard(prevBoard => {
-            if (!prevBoard.lists[listId]) return prevBoard; // Check if list exists
+            if (!prevBoard.lists[listId]) return prevBoard; 
 
             const { [listId]: deletedList, ...restLists } = prevBoard.lists; // Eliminar la lista
             const tasksToDelete = deletedList.taskIds;
@@ -585,7 +585,7 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     const deleteTask = (taskId: string) => {
         setBoard(prevBoard => {
             const taskToDelete = prevBoard.tasks[taskId];
-            if (!taskToDelete) return prevBoard; // Check if task exists
+            if (!taskToDelete) return prevBoard; // Check si tarea existe
 
             const listId = taskToDelete.listId;
             const updatedLists = { ...prevBoard.lists };
