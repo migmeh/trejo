@@ -383,7 +383,7 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     const addTask = (listId: string, title: string, description?: string) => {
         if (!board.lists[listId]) {
             console.error(`List with id ${listId} does not exist`);
-            return; // Important: Exit if list doesn't exist
+            return; 
         }
         const taskId = generateId();
         const newTask: Task = {
@@ -396,9 +396,8 @@ const BoardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) =>
         };
 
         setBoard(prevBoard => {
-            // Check again inside the state update for correctness
-            if (!prevBoard.lists[listId]) {
-                return prevBoard; // Do not proceed if the list suddenly disappeared
+// Verifique nuevamente dentro de la actualización del estado para verificar que sea correcto            if (!prevBoard.lists[listId]) {
+                return prevBoard; 
             }
             const updatedBoard = {
                 ...prevBoard,
