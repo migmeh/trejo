@@ -1010,8 +1010,7 @@ const ListColumn: React.FC<{ listId: string }> = ({ listId }) => {
                             Delete List
                         </DialogTitle>
                         <DialogDescription className="text-gray-300">
-                            Are you sure you want to delete this list and all its tasks? This action cannot be undone.
-                        </DialogDescription>
+                        Estas Seguro que desea eliminar esta lista y todas sus tareas? Esta acción no se puede deshacer.                        </DialogDescription>
                     </DialogHeader>
                     <DialogFooter>
                         <Button variant="outline" onClick={() => setIsDeletingList(false)} className="bg-gray-500/20 text-gray-400">
