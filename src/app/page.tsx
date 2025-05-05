@@ -265,7 +265,7 @@ const LoginPage = () => {
                         Welcome
                     </CardTitle>
                     <CardDescription className="text-center">
-                        Escribe tu email
+                        Escribe tu email janet.weaver@reqres.in
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -329,7 +329,7 @@ const SignupPage = () => {
                         Welcome
                     </CardTitle>
                     <CardDescription className="text-center">
-                        Escribe tu email
+                        Escribe tu email janet.weaver@reqres.in
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -1172,4 +1172,3 @@ const WrappedApp = () => {
 }
 
 export default WrappedApp;
-
