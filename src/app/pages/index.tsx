@@ -159,7 +159,6 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-api-key': 'reqres-free-v1'
                 },
                 body: JSON.stringify({ email, password: 'password' }), // ReqRes requiere 'password'
             });
@@ -179,7 +178,6 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-api-key': 'reqres-free-v1'
                 },
                 body: JSON.stringify({ email, password: 'password' }), // ReqRes requiere 'password'
             });
