@@ -10,6 +10,14 @@ Para esta prueba tecnica se utulizo la API API de ReqRes (https://reqres.in) par
 ```
 ![Image](https://github.com/user-attachments/assets/d4d16513-36e4-4433-b912-fe4a3d594616)
 
+# Para ejecutarlo
+
+1.- clona el repositorio
+
+2.- instalar dependencias npm install
+
+3.- correrlo npm run dev
+
 # Arquitectura General
 
 La aplicación se estructurará en las siguientes capas principales:

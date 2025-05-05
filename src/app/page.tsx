@@ -34,6 +34,8 @@ import {
 import Link from 'next/link'; // Importa el componente Link de Next.js
 import { useRouter } from 'next/navigation'; // Importa el hook useRouter
 
+//import LoginPage from './loginPage'
+
 // ===============================
 // Tipos y Interfaces
 // ===============================
@@ -234,6 +236,8 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
     );
 };
 
+
+
 const LoginPage = () => {
     const [email, setEmail] = useState('');
     const { login, loading, error } = useAuth();
@@ -258,10 +262,10 @@ const LoginPage = () => {
                 <CardHeader>
                     <CardTitle className="text-center">
                         <LogIn className="inline-block mr-2" />
-                        Login
+                        Welcome
                     </CardTitle>
                     <CardDescription className="text-center">
-                        Enter your email to log in
+                        Escribe tu email
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -280,10 +284,10 @@ const LoginPage = () => {
                             {loading ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Logging in...
+                                    Espere...
                                 </>
                             ) : (
-                                "Login"
+                                "Click"
                             )}
                         </Button>
                         {(error || localError) && ( // Mostrar errores de ambos contextos
@@ -322,10 +326,10 @@ const SignupPage = () => {
                 <CardHeader>
                     <CardTitle className="text-center">
                         <UserPlus className="inline-block mr-2" />
-                        Sign Up
+                        Welcome
                     </CardTitle>
                     <CardDescription className="text-center">
-                        Enter your email to create an account
+                        Escribe tu email
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -344,10 +348,10 @@ const SignupPage = () => {
                             {loading ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Signing up...
+                                    Espere...
                                 </>
                             ) : (
-                                "Sign Up"
+                                "Click"
                             )}
                         </Button>
                         {(error || localError) && (
