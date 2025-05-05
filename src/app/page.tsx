@@ -20,6 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
+
 import { cn } from '@/lib/utils';
 import {
     Dialog,
@@ -30,6 +31,8 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
+import Link from 'next/link'; // Importa el componente Link de Next.js
+import { useRouter } from 'next/navigation'; // Importa el hook useRouter
 
 // ===============================
 // Tipos y Interfaces
@@ -52,7 +55,7 @@ interface Task {
 interface List {
     id: string;
     title: string;
-    taskIds: string[]; // IDs de las tareas en la lista, manteniendo el orden
+    taskIds: string[]; // IDs de las tareas en esta lista, manteniendo el orden
 }
 
 interface Board {
@@ -125,7 +128,14 @@ const useReqRes = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch(`https://reqres.in/api${endpoint}`, options);
+            const response = await fetch(`https://reqres.in/api${endpoint}`, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': 'reqres-free-v1', // Agregada la API key
+                    ...options.headers,
+                },
+            });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -159,7 +169,6 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-api-key': 'reqres-free-v1'
                 },
                 body: JSON.stringify({ email, password: 'password' }), // ReqRes requiere 'password'
             });
@@ -179,7 +188,6 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => 
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-api-key': 'reqres-free-v1'
                 },
                 body: JSON.stringify({ email, password: 'password' }), // ReqRes requiere 'password'
             });
@@ -231,6 +239,8 @@ const LoginPage = () => {
     const [email, setEmail] = useState('');
     const { login, loading, error } = useAuth();
     const [localError, setLocalError] = useState<string | null>(null); // Manejo de errores locales
+    const router = useRouter();
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -240,6 +250,7 @@ const LoginPage = () => {
             return;
         }
         await login(email);
+        router.push('/'); // Redirige al tablero después del inicio de sesión
     };
 
     return (
@@ -293,6 +304,7 @@ const SignupPage = () => {
     const [email, setEmail] = useState('');
     const { signup, loading, error } = useAuth();
     const [localError, setLocalError] = useState<string | null>(null);
+    const router = useRouter();
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -302,6 +314,7 @@ const SignupPage = () => {
             return;
         }
         await signup(email);
+        router.push('/'); // Redirige al tablero después del registro
     };
 
     return (
@@ -826,6 +839,8 @@ const TaskCard: React.FC<{ taskId: string }> = ({ taskId }) => {
     );
 };
 
+
+
 const ListColumn: React.FC<{ listId: string }> = ({ listId }) => {
     const { board, addTask, moveTask, deleteList, reorderTask } = useBoard();
     const list = board.lists[listId];
@@ -994,6 +1009,7 @@ const ListColumn: React.FC<{ listId: string }> = ({ listId }) => {
     );
 };
 
+
 const BoardPage = () => {
     const { board, addList, loading, error } = useBoard();
     const [newListTitle, setNewListTitle] = useState('');
@@ -1071,6 +1087,8 @@ const BoardPage = () => {
 const App = () => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const { user, logout } = useAuth();
+    const router = useRouter();
+
 
     useEffect(() => {
         // Simulación de verificación de autenticación
@@ -1095,8 +1113,12 @@ const App = () => {
                     </div>
                 ) : (
                     <div className="flex gap-2">
-                        <a href="/login" className="text-blue-400 hover:text-blue-300">Login</a>
-                        <a href="/signup" className="text-green-400 hover:text-green-300">Sign Up</a>
+                        <Link href="/login" className="text-blue-400 hover:text-blue-300">
+                            Login
+                        </Link>
+                        <Link href="/signup" className="text-green-400 hover:text-green-300">
+                            Sign Up
+                        </Link>
                     </div>
                 )}
             </nav>
@@ -1109,7 +1131,7 @@ const App = () => {
                     </BoardProvider>
                 ) : (
                     // Simulación de enrutamiento básico.  En una app real de Next.js, usarías el sistema de enrutamiento de Next.js.
-                    (window.location.pathname === '/login' ? <LoginPage /> : <SignupPage />)
+                    (router.pathname === '/login' ? <LoginPage /> : <SignupPage />)
                 )}
             </main>
         </div>
